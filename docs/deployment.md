@@ -28,6 +28,15 @@ cp -r content.example content
 docker compose up -d --build
 ```
 
+If port 8080 is already in use on that host, put the port you want in a `.env` next to
+`compose.yaml` before starting:
+
+```bash
+echo "SITE_PORT=8091" > .env
+```
+
+`.env` is gitignored, so the host's local port choice never travels back to the repository.
+
 Then check it:
 
 ```bash

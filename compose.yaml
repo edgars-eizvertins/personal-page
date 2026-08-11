@@ -3,8 +3,10 @@ services:
     build: .
     image: personal-page:latest
     container_name: personal-page
+    # Override in a local .env when 8080 is already taken on the host:
+    #   SITE_PORT=8091
     ports:
-      - "8080:8080"
+      - "${SITE_PORT:-8080}:8080"
 
     # The whole point of the design. Editing a file on the host is visible inside the container
     # instantly, because a bind mount shares the host kernel. Read-only because the application
