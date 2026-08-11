@@ -59,8 +59,16 @@ docker compose up -d --build
 ```
 
 `content/` is bind-mounted read-only, never baked into the image, so updating the site on the
-host is a text edit and involves Docker not at all. Cross-building for arm64, transferring the
-image, and the rest: [docs/deployment.md](docs/deployment.md).
+host is a text edit and involves Docker not at all.
+
+To publish a multi-arch image instead, so the deployment host only ever pulls:
+
+```bash
+./scripts/publish-images.sh v0.1.0
+```
+
+Both architectures come out of one native build — no emulation. Details, and the registry-free
+alternative: [docs/deployment.md](docs/deployment.md).
 
 ## Documentation
 

@@ -80,28 +80,49 @@ docker compose up -d --build
 
 The content mount is untouched, so nothing you have written is at risk.
 
-## Cross-building for arm64
+## Publishing to a registry
 
-Building on a Raspberry Pi works but is slow. Building on an amd64 machine and shipping the
-image is usually faster:
+The usual flow: build multi-arch on your own machine, push to a registry, pull on the host.
+That keeps the .NET SDK — and the build — off the deployment host entirely.
+
+```bash
+docker login -u <your-registry-user>
+echo "IMAGE_NAME=<your-registry-user>/personal-page" >> .env
+./scripts/publish-images.sh v0.1.0
+```
+
+The script builds `linux/amd64,linux/arm64`, tags both the version and `latest`, attaches OCI
+source/version/revision labels, and pushes. It refuses to run on a dirty working tree, because
+a published tag should map to a commit.
+
+The registry namespace is never hardcoded in this repository — it comes from
+`DOCKERHUB_NAMESPACE` or from the gitignored `.env`, so a fork does not inherit somebody
+else's account.
+
+**No QEMU is involved.** The Dockerfile's build stage is pinned to `${BUILDPLATFORM}` and the
+publish is portable IL with no `RuntimeIdentifier`, so the compile runs once, natively, and
+serves both architectures. Only the `aspnet` runtime layer differs per arch. This is the
+reason `PublishReadyToRun` is off — see the comment in the Dockerfile if you want it back.
+
+Then on the deployment host, with only `compose.yaml`, a `.env` and `content/`:
+
+```bash
+docker compose pull && docker compose up -d
+```
+
+Upgrading later is the same two commands. Pin a release by setting `IMAGE_TAG=v0.1.0` in the
+host's `.env` instead of tracking `latest`.
+
+### Without a registry
+
+Build for the target arch and ship the image over SSH:
 
 ```bash
 docker buildx build --platform linux/arm64 -t personal-page:latest --load .
-```
-
-If buildx reports arm64 as unsupported, register QEMU once — it does not survive a reboot:
-
-```bash
-docker run --privileged --rm tonistiigi/binfmt --install arm64
-```
-
-Transfer the image:
-
-```bash
 docker save personal-page:latest | ssh <deploy-host> docker load
 ```
 
-Then on the host, start it without rebuilding:
+Then start it on the host without rebuilding:
 
 ```bash
 docker compose up -d --no-build
