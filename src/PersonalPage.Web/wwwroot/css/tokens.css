@@ -1,0 +1,161 @@
+/*
+ * tokens.css — custom properties only. No selectors that lay anything out, no rules that are not
+ * a variable declaration. site.css consumes these and nothing else.
+ *
+ * This is deliberately a plain, neutral placeholder: system fonts, a grey scale, one restrained
+ * accent. It should look unfinished but never be structurally wrong. A real design lands here as
+ * a file swap — see docs/design.md.
+ *
+ * Every theme is declared twice:
+ *   @media (prefers-color-scheme: …)  so the OS setting works with no script at all
+ *   :root[data-theme="…"]             so the header toggle can override the OS in either direction
+ *
+ * The attribute selectors are written after the media queries and are more specific, so they win
+ * both ways: a visitor on a dark-mode OS who picks light gets light.
+ */
+
+:root {
+  /* ---------------------------------------------------------------- type */
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "SFMono-Regular", "Cascadia Mono", "Liberation Mono", Menlo, Consolas, monospace;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.375rem;
+  --text-2xl: 1.75rem;
+  --text-3xl: 2.25rem;
+
+  --line-height-body: 1.65;
+  --line-height-heading: 1.25;
+
+  /* ------------------------------------------------------------- spacing */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+
+  /* --------------------------------------------------------------- shape */
+  --radius-sm: 3px;
+  --radius-md: 6px;
+  --radius-lg: 10px;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+  /* -------------------------------------------------------------- layout */
+  --measure: 68ch;
+  --page-width: 60rem;
+
+  /* -------------------------------------------------- colour (light theme) */
+  --color-bg: #ffffff;
+  --color-surface: #f6f7f8;
+  --color-text: #1b1d1f;
+  --color-text-muted: #5c6266;
+  --color-accent: #1f5fa8;
+  --color-accent-hover: #16457a;
+  --color-border: #d9dcdf;
+  --color-code-bg: #f4f5f6;
+
+  /* -------------------------------------- syntax palette (light theme) */
+  --syntax-comment: #6b7177;
+  --syntax-keyword: #7c3f9e;
+  --syntax-string: #1a6b3c;
+  --syntax-number: #98551b;
+  --syntax-function: #1f5fa8;
+  --syntax-type: #0f6b73;
+  --syntax-operator: #4a5056;
+  --syntax-punctuation: #4a5056;
+
+  /* Extras beyond the eight required categories. Each falls back to a required token in
+     site.css, so a design that only supplies the eight still renders correctly. */
+  --syntax-attribute: #98551b;
+  --syntax-builtin: #7c3f9e;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --color-bg: #16181a;
+    --color-surface: #1e2124;
+    --color-text: #e3e6e8;
+    --color-text-muted: #9aa1a7;
+    --color-accent: #79aee8;
+    --color-accent-hover: #a4c8f0;
+    --color-border: #2e3336;
+    --color-code-bg: #1b1e21;
+
+    --syntax-comment: #8b9299;
+    --syntax-keyword: #c99ae0;
+    --syntax-string: #8fce9f;
+    --syntax-number: #e0b080;
+    --syntax-function: #79aee8;
+    --syntax-type: #6fc9c4;
+    --syntax-operator: #b9c0c6;
+    --syntax-punctuation: #b9c0c6;
+
+    --syntax-attribute: #e0b080;
+    --syntax-builtin: #c99ae0;
+
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+    --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.6);
+  }
+}
+
+/* The toggle's override. Declared after the media query and more specific, so it wins. */
+:root[data-theme="light"] {
+  --color-bg: #ffffff;
+  --color-surface: #f6f7f8;
+  --color-text: #1b1d1f;
+  --color-text-muted: #5c6266;
+  --color-accent: #1f5fa8;
+  --color-accent-hover: #16457a;
+  --color-border: #d9dcdf;
+  --color-code-bg: #f4f5f6;
+
+  --syntax-comment: #6b7177;
+  --syntax-keyword: #7c3f9e;
+  --syntax-string: #1a6b3c;
+  --syntax-number: #98551b;
+  --syntax-function: #1f5fa8;
+  --syntax-type: #0f6b73;
+  --syntax-operator: #4a5056;
+  --syntax-punctuation: #4a5056;
+
+  --syntax-attribute: #98551b;
+  --syntax-builtin: #7c3f9e;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+:root[data-theme="dark"] {
+  --color-bg: #16181a;
+  --color-surface: #1e2124;
+  --color-text: #e3e6e8;
+  --color-text-muted: #9aa1a7;
+  --color-accent: #79aee8;
+  --color-accent-hover: #a4c8f0;
+  --color-border: #2e3336;
+  --color-code-bg: #1b1e21;
+
+  --syntax-comment: #8b9299;
+  --syntax-keyword: #c99ae0;
+  --syntax-string: #8fce9f;
+  --syntax-number: #e0b080;
+  --syntax-function: #79aee8;
+  --syntax-type: #6fc9c4;
+  --syntax-operator: #b9c0c6;
+  --syntax-punctuation: #b9c0c6;
+
+  --syntax-attribute: #e0b080;
+  --syntax-builtin: #c99ae0;
+
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.6);
+}

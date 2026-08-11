@@ -1,0 +1,25 @@
+@*
+    The page's single h1. Markdown bodies start at h2, and the renderer demotes anything higher
+    so a stray "#" cannot produce a second h1.
+*@
+<header class="page-header">
+    <h1 class="page-title">@Title</h1>
+
+    @if (!string.IsNullOrWhiteSpace(Meta))
+    {
+        <p class="page-meta">@Meta</p>
+    }
+
+    @ChildContent
+</header>
+
+@code {
+    [Parameter]
+    public string Title { get; set; } = "";
+
+    [Parameter]
+    public string? Meta { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+}

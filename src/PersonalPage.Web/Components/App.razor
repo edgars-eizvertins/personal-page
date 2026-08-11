@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <base href="/" />
+
+    @*
+        Runs before first paint so a visitor who overrode their OS theme never sees a flash of
+        the wrong one. This is the only inline script on the site; it is allowed by CSP hash.
+    *@
+    <script>@((MarkupString)ThemeScript.Source)</script>
+
+    <link rel="stylesheet" href="@Assets["css/tokens.css"]" />
+    <link rel="stylesheet" href="@Assets["css/site.css"]" />
+    <link rel="icon" type="image/png" href="@Assets["favicon.png"]" />
+
+    <HeadOutlet />
+</head>
+<body>
+    <Routes />
+
+    @*
+        Enhancement only. Every page renders, reads and navigates with scripting off; nothing
+        below adds content, only affordances.
+    *@
+    <script src="@Assets["js/theme.js"]" defer></script>
+    <script src="@Assets["js/code-copy.js"]" defer></script>
+</body>
+</html>

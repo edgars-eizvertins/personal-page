@@ -1,0 +1,25 @@
+@*
+    Built entirely from pages that declare nav_order. Adding a nav entry is a front matter edit,
+    never a code change.
+*@
+<nav class="site-nav" id="site-nav" aria-label="Main">
+    <ul class="site-nav-list">
+        @foreach (var entry in Entries)
+        {
+            <li>
+                <NavLink class="site-nav-link" href="@entry.Url" Match="MatchFor(entry.Url)">
+                    @entry.Title
+                </NavLink>
+            </li>
+        }
+    </ul>
+</nav>
+
+@code {
+    [Parameter]
+    public IReadOnlyList<NavEntry> Entries { get; set; } = [];
+
+    /// <summary>"/" would otherwise be marked active on every page.</summary>
+    private static NavLinkMatch MatchFor(string url) =>
+        url == "/" ? NavLinkMatch.All : NavLinkMatch.Prefix;
+}

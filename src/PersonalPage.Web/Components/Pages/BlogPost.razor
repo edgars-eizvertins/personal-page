@@ -1,0 +1,53 @@
+@page "/blog/{slug}"
+@inject IContentStore Store
+@inject NavigationManager Navigation
+
+@if (_post is null)
+{
+    @* Router renders NotFoundPage; nothing to emit here. *@
+}
+else
+{
+    <PageTitle>@_post.Title · @_site.Title</PageTitle>
+    @if (!string.IsNullOrWhiteSpace(Description))
+    {
+        <HeadContent>
+            <meta name="description" content="@Description" />
+        </HeadContent>
+    }
+
+    <article class="page post">
+        <PageHeader Title="@_post.Title" Meta="@PostDate">
+            <TagList Tags="_post.FrontMatter.Tags" />
+        </PageHeader>
+
+        <MarkdownBlock Html="@_post.Html" />
+
+        <nav class="post-footer-nav" aria-label="Blog">
+            <a href="/blog">All posts</a>
+        </nav>
+    </article>
+}
+
+@code {
+    [Parameter]
+    public string? Slug { get; set; }
+
+    private SiteConfig _site = SiteConfig.Default();
+    private ContentDocument? _post;
+
+    private string? PostDate => _post?.SortDate is { } date ? DateText.Long(date) : null;
+
+    private string? Description => _post?.FrontMatter.Summary ?? _post?.FrontMatter.Description;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _site = await Store.GetSiteAsync();
+        _post = await Store.GetItemAsync(ContentFolders.Blog, Slug);
+
+        if (_post is null)
+        {
+            Navigation.NotFound();
+        }
+    }
+}

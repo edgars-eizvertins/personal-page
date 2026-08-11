@@ -1,0 +1,35 @@
+@page "/projects"
+@inject IContentStore Store
+
+<PageTitle>Projects · @_site.Title</PageTitle>
+
+<article class="page">
+    <PageHeader Title="Projects" />
+
+    @if (_projects.Count == 0)
+    {
+        <div class="prose">
+            <p>No projects yet. Add a markdown file under <code>content/projects/</code>.</p>
+        </div>
+    }
+    else
+    {
+        <div class="card-grid">
+            @foreach (var project in _projects)
+            {
+                <DocCard Document="project" />
+            }
+        </div>
+    }
+</article>
+
+@code {
+    private SiteConfig _site = SiteConfig.Default();
+    private IReadOnlyList<ContentDocument> _projects = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        _site = await Store.GetSiteAsync();
+        _projects = await Store.GetCollectionAsync(ContentFolders.Projects);
+    }
+}

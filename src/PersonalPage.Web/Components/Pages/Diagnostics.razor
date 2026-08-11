@@ -1,0 +1,151 @@
+@page "/_diagnostics"
+@inject ContentDiagnostics Checker
+
+@*
+    Content never passes through a build, so nothing validates it. This page is the feedback loop
+    a static site generator gets for free from its build failing. Read-only, deliberately
+    unstyled beyond the site defaults, and not linked from the nav.
+*@
+
+<PageTitle>Diagnostics</PageTitle>
+
+<article class="page diagnostics">
+    <PageHeader Title="Diagnostics" Meta="@($"{_report.DocumentCount} documents in {_report.RootPath}")" />
+
+    @if (_report.IsClean)
+    {
+        <div class="prose">
+            <p>No problems found.</p>
+        </div>
+    }
+
+    <section class="diagnostics-section">
+        <h2>Front matter (@_report.ParseIssues.Count)</h2>
+        @if (_report.ParseIssues.Count == 0)
+        {
+            <p class="diagnostics-empty">Every document parsed.</p>
+        }
+        else
+        {
+            <ul class="diagnostics-list">
+                @foreach (var issue in _report.ParseIssues)
+                {
+                    <li><code>@issue.RelativePath</code> — @issue.Message</li>
+                }
+            </ul>
+        }
+    </section>
+
+    <section class="diagnostics-section">
+        <h2>Broken internal links (@_report.BrokenLinks.Count)</h2>
+        @if (_report.BrokenLinks.Count == 0)
+        {
+            <p class="diagnostics-empty">Every internal link resolves.</p>
+        }
+        else
+        {
+            <ul class="diagnostics-list">
+                @foreach (var link in _report.BrokenLinks)
+                {
+                    <li><code>@link.SourcePath</code> → <code>@link.Href</code> — @link.Reason</li>
+                }
+            </ul>
+        }
+    </section>
+
+    <section class="diagnostics-section">
+        <h2>Missing media (@_report.MissingMedia.Count)</h2>
+        @if (_report.MissingMedia.Count == 0)
+        {
+            <p class="diagnostics-empty">Every referenced image exists.</p>
+        }
+        else
+        {
+            <ul class="diagnostics-list">
+                @foreach (var link in _report.MissingMedia)
+                {
+                    <li><code>@link.SourcePath</code> → <code>@link.Href</code> — @link.Reason</li>
+                }
+            </ul>
+        }
+    </section>
+
+    <section class="diagnostics-section">
+        <h2>Orphaned assets (@_report.OrphanedAssets.Count)</h2>
+        @if (_report.OrphanedAssets.Count == 0)
+        {
+            <p class="diagnostics-empty">Every asset is referenced.</p>
+        }
+        else
+        {
+            <ul class="diagnostics-list">
+                @foreach (var asset in _report.OrphanedAssets)
+                {
+                    <li><code>assets/@asset</code></li>
+                }
+            </ul>
+        }
+    </section>
+
+    <section class="diagnostics-section">
+        <h2>Drafts (@_report.Drafts.Count)</h2>
+        @if (_report.Drafts.Count == 0)
+        {
+            <p class="diagnostics-empty">No drafts.</p>
+        }
+        else
+        {
+            <ul class="diagnostics-list">
+                @foreach (var draft in _report.Drafts)
+                {
+                    <li><code>@draft.RelativePath</code> — @draft.Title</li>
+                }
+            </ul>
+        }
+    </section>
+
+    <section class="diagnostics-section">
+        <h2>Dated in the future (@_report.FutureDated.Count)</h2>
+        @if (_report.FutureDated.Count == 0)
+        {
+            <p class="diagnostics-empty">Nothing is dated ahead of today.</p>
+        }
+        else
+        {
+            <ul class="diagnostics-list">
+                @foreach (var document in _report.FutureDated)
+                {
+                    <li>
+                        <code>@document.RelativePath</code> —
+                        @(document.SortDate is { } d ? DateText.Iso(d) : "no date")
+                    </li>
+                }
+            </ul>
+        }
+    </section>
+
+    <section class="diagnostics-section">
+        <h2>Settings</h2>
+        <ul class="diagnostics-list">
+            <li>Content root: <code>@_report.RootPath</code></li>
+            <li>Drafts visible: <code>@_showDrafts</code></li>
+        </ul>
+    </section>
+</article>
+
+@code {
+    [Inject]
+    public IContentStore Store { get; set; } = default!;
+
+    private DiagnosticsReport _report = Empty();
+    private bool _showDrafts;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _report = await Checker.RunAsync();
+        _showDrafts = Store.ShowDrafts;
+    }
+
+    private static DiagnosticsReport Empty() =>
+        new("", 0, [], [], [], [], [], []);
+}

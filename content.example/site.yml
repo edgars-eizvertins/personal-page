@@ -1,0 +1,29 @@
+# Site-wide settings. Editing this file is live — no restart, no rebuild.
+#
+# EXAMPLE CONTENT. Replace everything here with your own details.
+
+title: Your Name
+tagline: Backend developer, somewhere on the internet
+description: Personal site and notes of a software developer.
+author: Your Name
+
+footer: © Your Name. Built with markdown files and no build step.
+
+# Navigation. Pages carry their own nav_order in front matter; these entries cover the
+# collection views, which are routes rather than files. Both lists sort together by order.
+nav:
+  - title: Experience
+    url: /experience
+    order: 2
+  - title: Projects
+    url: /projects
+    order: 5
+  - title: Writing
+    url: /blog
+    order: 6
+
+links:
+  - label: GitHub
+    url: https://github.com/your-handle
+  - label: Email
+    url: mailto:you@example.com

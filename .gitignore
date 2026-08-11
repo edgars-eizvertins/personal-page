@@ -1,0 +1,42 @@
+# The site owner's real content is never tracked here.
+# Start from the shipped examples:  cp -r content.example content
+content/
+
+# Local deployment settings (hostnames, IPs) stay out of the repo.
+.env
+*.local.env
+
+# .NET build output
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+artifacts/
+*.user
+*.suo
+*.userprefs
+project.lock.json
+project.fragment.lock.json
+
+# Test / coverage output
+[Tt]est[Rr]esult*/
+coverage*.json
+coverage*.xml
+coverage*.info
+*.coverage
+*.trx
+
+# Rider / Visual Studio / VS Code
+.vs/
+.idea/
+*.sln.iml
+.vscode/*
+!.vscode/extensions.json
+
+# OS noise
+.DS_Store
+Thumbs.db
+*~
+
+# Local Claude Code settings, not part of the project.
+.claude/settings.local.json

@@ -1,0 +1,52 @@
+@page "/{*path}"
+@inject IContentStore Store
+@inject NavigationManager Navigation
+
+@*
+    The catch-all. content/pages/foo.md is served at /foo with no code at all — this component is
+    the entire mechanism. It sits at the lowest routing precedence, so every literal route
+    (/blog, /projects/{slug}, …) wins over it.
+*@
+
+@if (_document is null)
+{
+    @* Router renders NotFoundPage; nothing to emit here. *@
+}
+else
+{
+    <PageTitle>@PageTitleText</PageTitle>
+    @if (!string.IsNullOrWhiteSpace(_document.FrontMatter.Description))
+    {
+        <HeadContent>
+            <meta name="description" content="@_document.FrontMatter.Description" />
+        </HeadContent>
+    }
+
+    <article class="page">
+        <PageHeader Title="@_document.Title" />
+        <MarkdownBlock Html="@_document.Html" />
+    </article>
+}
+
+@code {
+    [Parameter]
+    public string? Path { get; set; }
+
+    private ContentDocument? _document;
+    private SiteConfig _site = SiteConfig.Default();
+
+    private string PageTitleText => $"{_document!.Title} · {_site.Title}";
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _site = await Store.GetSiteAsync();
+        _document = await Store.GetPageAsync(Path);
+
+        if (_document is null)
+        {
+            // Hands over to the Router's NotFoundPage, which renders content/pages/404.md
+            // and sets a real 404 on the response.
+            Navigation.NotFound();
+        }
+    }
+}

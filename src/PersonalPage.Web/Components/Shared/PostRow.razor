@@ -1,0 +1,30 @@
+@*
+    A blog list row: date, title, summary, tags.
+*@
+<article class="post-row">
+    @if (Document.SortDate is { } date)
+    {
+        <p class="post-row-date">
+            <time datetime="@date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)">
+                @DateText.Long(date)
+            </time>
+        </p>
+    }
+
+    <h2 class="post-row-title">
+        <a href="@Document.Url">@Document.Title</a>
+    </h2>
+
+    @if (!string.IsNullOrWhiteSpace(Document.FrontMatter.Summary))
+    {
+        <p class="post-row-summary">@Document.FrontMatter.Summary</p>
+    }
+
+    <TagList Tags="Document.FrontMatter.Tags" />
+</article>
+
+@code {
+    [Parameter]
+    [EditorRequired]
+    public ContentDocument Document { get; set; } = default!;
+}

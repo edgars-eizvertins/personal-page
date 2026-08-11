@@ -1,0 +1,17 @@
+@if (Tags.Count > 0)
+{
+    <ul class="tag-list" aria-label="@Label">
+        @foreach (var tag in Tags)
+        {
+            <li class="tag">@tag</li>
+        }
+    </ul>
+}
+
+@code {
+    [Parameter]
+    public IReadOnlyList<string> Tags { get; set; } = [];
+
+    [Parameter]
+    public string Label { get; set; } = "Tags";
+}

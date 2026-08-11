@@ -1,0 +1,57 @@
+@*
+    A project card: optional thumbnail, title, one-line summary, tag pills.
+*@
+<article class="card">
+    @if (!string.IsNullOrWhiteSpace(Document.FrontMatter.Image))
+    {
+        <a class="card-image" href="@Document.Url" tabindex="-1" aria-hidden="true">
+            <img src="@Document.FrontMatter.Image" alt="" loading="lazy" decoding="async" />
+        </a>
+    }
+
+    <div class="card-body">
+        <h3 class="card-title">
+            <a href="@Document.Url">@Document.Title</a>
+        </h3>
+
+        @if (Document.SortDate is { } date)
+        {
+            <p class="card-date">
+                <time datetime="@date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)">
+                    @DateText.Long(date)
+                </time>
+            </p>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(Document.FrontMatter.Summary))
+        {
+            <p class="card-summary">@Document.FrontMatter.Summary</p>
+        }
+
+        <TagList Tags="Document.FrontMatter.Tags" />
+
+        @if (Links)
+        {
+            <p class="card-links">
+                @if (!string.IsNullOrWhiteSpace(Document.FrontMatter.Repo))
+                {
+                    <a href="@Document.FrontMatter.Repo" rel="noopener">Source</a>
+                }
+                @if (!string.IsNullOrWhiteSpace(Document.FrontMatter.Url))
+                {
+                    <a href="@Document.FrontMatter.Url" rel="noopener">Live</a>
+                }
+            </p>
+        }
+    </div>
+</article>
+
+@code {
+    [Parameter]
+    [EditorRequired]
+    public ContentDocument Document { get; set; } = default!;
+
+    /// <summary>Show the repo and live links from front matter.</summary>
+    [Parameter]
+    public bool Links { get; set; } = true;
+}

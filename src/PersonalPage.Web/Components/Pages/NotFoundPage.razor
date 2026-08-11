@@ -1,0 +1,59 @@
+@page "/not-found"
+@inject IContentStore Store
+
+@*
+    Rendered by the Router whenever a page component calls NavigationManager.NotFound().
+
+    A real 404 — the status code is on the response, not faked with a 200 and error text. The
+    body comes from content/pages/404.md when that file exists, so the message is editable like
+    everything else, and falls back to a built-in one so the site works before anyone writes it.
+
+    Two constraints shaped this into a routable page rather than a shared child component.
+    Blazor's static SSR treats a 404 set during rendering as a not-found signal and discards
+    whatever the current component produced, handing over to the Router's NotFoundPage — so the
+    404 body cannot be rendered by the component that discovered the miss. And the Router will
+    only accept a routable component here, so the @@page directive has to stay even though
+    nothing links to /not-found.
+*@
+
+<PageTitle>@Title</PageTitle>
+
+<article class="page">
+    <PageHeader Title="@Title" />
+
+    @if (_document is not null)
+    {
+        <MarkdownBlock Html="@_document.Html" />
+    }
+    else
+    {
+        <div class="prose">
+            <p>There is nothing at this address.</p>
+            <p><a href="/">Back to the home page</a></p>
+        </div>
+    }
+</article>
+
+@code {
+    private const string Slug = "404";
+
+    [CascadingParameter]
+    public HttpContext? HttpContext { get; set; }
+
+    private ContentDocument? _document;
+
+    private string Title => _document?.Title ?? "Page not found";
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Covers a direct request to /not-found, which arrives with a 200 the Router has not
+        // corrected. Reaching it that way yields an empty 404, which is the right answer for an
+        // address that is not content.
+        if (HttpContext is { Response.HasStarted: false } context)
+        {
+            context.Response.StatusCode = StatusCodes.Status404NotFound;
+        }
+
+        _document = await Store.GetPageAsync(Slug);
+    }
+}

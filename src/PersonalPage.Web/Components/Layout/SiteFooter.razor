@@ -1,0 +1,47 @@
+@*
+    Everything here comes from site.yml, so changing a social link is a text edit on the host.
+*@
+<footer class="site-footer">
+    <div class="wrap site-footer-inner">
+        @if (!string.IsNullOrWhiteSpace(Site.Footer))
+        {
+            <p class="site-footer-text">@Site.Footer</p>
+        }
+
+        @if (Site.Links.Count > 0)
+        {
+            <ul class="site-footer-links">
+                @foreach (var link in Site.Links)
+                {
+                    <li>
+                        <a href="@link.Url" rel="@RelFor(link)">@link.Label</a>
+                    </li>
+                }
+            </ul>
+        }
+    </div>
+</footer>
+
+@code {
+    [Parameter]
+    public SiteConfig Site { get; set; } = SiteConfig.Default();
+
+    private static string RelFor(SiteLink link)
+    {
+        var isExternal = link.Url.StartsWith("http://", StringComparison.OrdinalIgnoreCase)
+                         || link.Url.StartsWith("https://", StringComparison.OrdinalIgnoreCase);
+
+        var parts = new List<string>(2);
+        if (!string.IsNullOrWhiteSpace(link.Rel))
+        {
+            parts.Add(link.Rel!.Trim());
+        }
+
+        if (isExternal && !parts.Contains("noopener", StringComparer.OrdinalIgnoreCase))
+        {
+            parts.Add("noopener");
+        }
+
+        return string.Join(' ', parts);
+    }
+}

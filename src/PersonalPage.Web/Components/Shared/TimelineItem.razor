@@ -1,0 +1,40 @@
+@*
+    One role on the experience timeline. An entry with no "end" is current and renders "Present".
+*@
+<li class="timeline-item">
+    <div class="timeline-marker" aria-hidden="true"></div>
+
+    <div class="timeline-body">
+        <h2 class="timeline-role">
+            @Role
+            @if (!string.IsNullOrWhiteSpace(Company))
+            {
+                <span class="timeline-company">@Company</span>
+            }
+        </h2>
+
+        <p class="timeline-meta">
+            <span class="timeline-dates">@DateText.Range(Document.FrontMatter.Start, Document.FrontMatter.End)</span>
+            @if (!string.IsNullOrWhiteSpace(Document.FrontMatter.Location))
+            {
+                <span class="timeline-location">@Document.FrontMatter.Location</span>
+            }
+        </p>
+
+        <MarkdownBlock Html="@Document.Html" />
+
+        <TagList Tags="Document.FrontMatter.Tech" Label="Technologies" />
+    </div>
+</li>
+
+@code {
+    [Parameter]
+    [EditorRequired]
+    public ContentDocument Document { get; set; } = default!;
+
+    private string Role => string.IsNullOrWhiteSpace(Document.FrontMatter.Role)
+        ? Document.Title
+        : Document.FrontMatter.Role!;
+
+    private string? Company => Document.FrontMatter.Company;
+}

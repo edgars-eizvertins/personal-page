@@ -1,0 +1,37 @@
+@page "/blog"
+@inject IContentStore Store
+
+<PageTitle>Writing · @_site.Title</PageTitle>
+
+<article class="page">
+    <PageHeader Title="Writing" Meta="@Meta" />
+
+    @if (_posts.Count == 0)
+    {
+        <div class="prose">
+            <p>No posts yet. Add a markdown file under <code>content/blog/</code>.</p>
+        </div>
+    }
+    else
+    {
+        <ul class="post-list">
+            @foreach (var post in _posts)
+            {
+                <li><PostRow Document="post" /></li>
+            }
+        </ul>
+    }
+</article>
+
+@code {
+    private SiteConfig _site = SiteConfig.Default();
+    private IReadOnlyList<ContentDocument> _posts = [];
+
+    private string? Meta => _posts.Count == 0 ? null : $"{_posts.Count} post{(_posts.Count == 1 ? "" : "s")}";
+
+    protected override async Task OnInitializedAsync()
+    {
+        _site = await Store.GetSiteAsync();
+        _posts = await Store.GetCollectionAsync(ContentFolders.Blog);
+    }
+}

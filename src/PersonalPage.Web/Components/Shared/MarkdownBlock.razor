@@ -1,0 +1,15 @@
+@*
+    The rendered HTML is emitted verbatim. content/ is a trusted input by design — see the trust
+    boundary note in docs/architecture.md before pointing the store at anything else.
+*@
+@if (!string.IsNullOrWhiteSpace(Html))
+{
+    <div class="prose">
+        @((MarkupString)Html)
+    </div>
+}
+
+@code {
+    [Parameter]
+    public string? Html { get; set; }
+}

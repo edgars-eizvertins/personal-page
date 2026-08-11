@@ -1,0 +1,35 @@
+@page "/experience"
+@inject IContentStore Store
+
+<PageTitle>Experience · @_site.Title</PageTitle>
+
+<article class="page">
+    <PageHeader Title="Experience" />
+
+    @if (_roles.Count == 0)
+    {
+        <div class="prose">
+            <p>No roles yet. Add a markdown file under <code>content/experience/</code>.</p>
+        </div>
+    }
+    else
+    {
+        <ol class="timeline">
+            @foreach (var role in _roles)
+            {
+                <TimelineItem Document="role" />
+            }
+        </ol>
+    }
+</article>
+
+@code {
+    private SiteConfig _site = SiteConfig.Default();
+    private IReadOnlyList<ContentDocument> _roles = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        _site = await Store.GetSiteAsync();
+        _roles = await Store.GetCollectionAsync(ContentFolders.Experience);
+    }
+}

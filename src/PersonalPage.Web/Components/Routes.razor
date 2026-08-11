@@ -1,0 +1,14 @@
+@*
+    Literal routes (/blog, /projects/{slug}, …) out-rank ContentPage's "/{*path}" catch-all,
+    because Blazor prefers literal segments over a catch-all parameter. That precedence is the
+    single riskiest assumption in this design, so it is pinned by an integration test.
+
+    NotFoundPage is what a component reaches by calling NavigationManager.NotFound(). Blazor's
+    static SSR discards the output of a component that sets a 404 itself, so "render the 404
+    page" has to go through the Router rather than through a child component.
+*@
+<Router AppAssembly="typeof(Program).Assembly" NotFoundPage="typeof(Pages.NotFoundPage)">
+    <Found Context="routeData">
+        <RouteView RouteData="routeData" DefaultLayout="typeof(MainLayout)" />
+    </Found>
+</Router>

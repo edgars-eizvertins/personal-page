@@ -1,0 +1,42 @@
+@inherits LayoutComponentBase
+@inject IContentStore Store
+
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="site-header">
+    <div class="wrap site-header-inner">
+        <a class="site-title" href="/">@_site.Title</a>
+
+        @*
+            CSS-only disclosure: a visually hidden checkbox, a label, and a sibling selector.
+            Not because script is forbidden, but because this control has a complete CSS
+            solution that works before any script parses and cannot break. theme.js only adds
+            aria-expanded on top.
+        *@
+        <input type="checkbox" id="nav-toggle" class="nav-toggle" />
+        <label for="nav-toggle" class="nav-toggle-label">
+            <span class="nav-toggle-bars" aria-hidden="true"></span>
+            <span class="nav-toggle-text">Menu</span>
+        </label>
+
+        <NavMenu Entries="_nav" />
+        <ThemeToggle />
+    </div>
+</header>
+
+<main id="main" class="wrap site-main">
+    @Body
+</main>
+
+<SiteFooter Site="_site" />
+
+@code {
+    private SiteConfig _site = SiteConfig.Default();
+    private IReadOnlyList<NavEntry> _nav = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        _site = await Store.GetSiteAsync();
+        _nav = await Store.GetNavAsync();
+    }
+}

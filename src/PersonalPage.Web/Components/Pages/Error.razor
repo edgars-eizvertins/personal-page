@@ -1,0 +1,29 @@
+@page "/error"
+
+<PageTitle>Something went wrong</PageTitle>
+
+<article class="page">
+    <PageHeader Title="Something went wrong" />
+
+    <div class="prose">
+        <p>
+            The page could not be rendered. If you own this site, the details are in the
+            container logs.
+        </p>
+        <p><a href="/">Back to the home page</a></p>
+    </div>
+</article>
+
+@code {
+    [CascadingParameter]
+    public HttpContext? HttpContext { get; set; }
+
+    protected override void OnInitialized()
+    {
+        if (HttpContext is { Response.HasStarted: false } context
+            && context.Response.StatusCode == StatusCodes.Status200OK)
+        {
+            context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+        }
+    }
+}

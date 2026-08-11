@@ -1,0 +1,87 @@
+@page "/"
+@inject IContentStore Store
+
+<PageTitle>@_site.Title</PageTitle>
+@if (!string.IsNullOrWhiteSpace(Description))
+{
+    <HeadContent>
+        <meta name="description" content="@Description" />
+    </HeadContent>
+}
+
+<article class="page home">
+    @if (_page is not null)
+    {
+        <PageHeader Title="@_page.Title" Meta="@_site.Tagline" />
+        <MarkdownBlock Html="@_page.Html" />
+    }
+    else
+    {
+        <PageHeader Title="@_site.Title" Meta="@_site.Tagline" />
+        <div class="prose">
+            <p>
+                Nothing here yet. Create <code>content/pages/home.md</code> and this page will
+                render it.
+            </p>
+        </div>
+    }
+
+    @if (_projects.Count > 0)
+    {
+        <section class="home-section" aria-labelledby="recent-projects">
+            <h2 class="section-title" id="recent-projects">
+                <a href="/projects">Projects</a>
+            </h2>
+            <div class="card-grid">
+                @foreach (var project in _projects)
+                {
+                    <DocCard Document="project" Links="false" />
+                }
+            </div>
+        </section>
+    }
+
+    @if (_posts.Count > 0)
+    {
+        <section class="home-section" aria-labelledby="recent-posts">
+            <h2 class="section-title" id="recent-posts">
+                <a href="/blog">Writing</a>
+            </h2>
+            <ul class="post-list">
+                @foreach (var post in _posts)
+                {
+                    <li><PostRow Document="post" /></li>
+                }
+            </ul>
+        </section>
+    }
+</article>
+
+@code {
+    private const int RecentProjects = 3;
+    private const int RecentPosts = 4;
+
+    private SiteConfig _site = SiteConfig.Default();
+    private ContentDocument? _page;
+    private IReadOnlyList<ContentDocument> _projects = [];
+    private IReadOnlyList<ContentDocument> _posts = [];
+
+    private string? Description => _page?.FrontMatter.Description ?? _site.Description ?? _site.Tagline;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _site = await Store.GetSiteAsync();
+        _page = await Store.GetPageAsync(ContentPath.HomeSlug);
+
+        var projects = await Store.GetCollectionAsync(ContentFolders.Projects);
+
+        // Featured projects come first, so the home page can be curated from front matter.
+        _projects = projects
+            .OrderByDescending(p => p.FrontMatter.Featured)
+            .Take(RecentProjects)
+            .ToList();
+
+        var posts = await Store.GetCollectionAsync(ContentFolders.Blog);
+        _posts = posts.Take(RecentPosts).ToList();
+    }
+}

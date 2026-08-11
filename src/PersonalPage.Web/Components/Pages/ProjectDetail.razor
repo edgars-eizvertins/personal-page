@@ -1,0 +1,83 @@
+@page "/projects/{slug}"
+@inject IContentStore Store
+@inject NavigationManager Navigation
+
+@if (_project is null)
+{
+    @* Router renders NotFoundPage; nothing to emit here. *@
+}
+else
+{
+    <PageTitle>@_project.Title · @_site.Title</PageTitle>
+    @if (!string.IsNullOrWhiteSpace(Description))
+    {
+        <HeadContent>
+            <meta name="description" content="@Description" />
+        </HeadContent>
+    }
+
+    <article class="page project">
+        <PageHeader Title="@_project.Title" Meta="@ProjectDate">
+            @if (!string.IsNullOrWhiteSpace(_project.FrontMatter.Summary))
+            {
+                <p class="page-summary">@_project.FrontMatter.Summary</p>
+            }
+
+            <TagList Tags="_project.FrontMatter.Tags" />
+
+            @if (HasLinks)
+            {
+                <p class="page-links">
+                    @if (!string.IsNullOrWhiteSpace(_project.FrontMatter.Repo))
+                    {
+                        <a href="@_project.FrontMatter.Repo" rel="noopener">Source</a>
+                    }
+                    @if (!string.IsNullOrWhiteSpace(_project.FrontMatter.Url))
+                    {
+                        <a href="@_project.FrontMatter.Url" rel="noopener">Live</a>
+                    }
+                </p>
+            }
+        </PageHeader>
+
+        @if (!string.IsNullOrWhiteSpace(_project.FrontMatter.Image))
+        {
+            <p class="project-image">
+                <img src="@_project.FrontMatter.Image" alt="" loading="lazy" decoding="async" />
+            </p>
+        }
+
+        <MarkdownBlock Html="@_project.Html" />
+
+        <nav class="post-footer-nav" aria-label="Projects">
+            <a href="/projects">All projects</a>
+        </nav>
+    </article>
+}
+
+@code {
+    [Parameter]
+    public string? Slug { get; set; }
+
+    private SiteConfig _site = SiteConfig.Default();
+    private ContentDocument? _project;
+
+    private string? ProjectDate => _project?.SortDate is { } date ? DateText.Long(date) : null;
+
+    private string? Description => _project?.FrontMatter.Summary ?? _project?.FrontMatter.Description;
+
+    private bool HasLinks =>
+        !string.IsNullOrWhiteSpace(_project?.FrontMatter.Repo)
+        || !string.IsNullOrWhiteSpace(_project?.FrontMatter.Url);
+
+    protected override async Task OnParametersSetAsync()
+    {
+        _site = await Store.GetSiteAsync();
+        _project = await Store.GetItemAsync(ContentFolders.Projects, Slug);
+
+        if (_project is null)
+        {
+            Navigation.NotFound();
+        }
+    }
+}

@@ -1,0 +1,42 @@
+services:
+  personal-page:
+    build: .
+    image: personal-page:latest
+    container_name: personal-page
+    ports:
+      - "8080:8080"
+
+    # The whole point of the design. Editing a file on the host is visible inside the container
+    # instantly, because a bind mount shares the host kernel. Read-only because the application
+    # only ever reads; authoring happens on the host side.
+    volumes:
+      - ./content:/app/content:ro
+
+    environment:
+      - ASPNETCORE_HTTP_PORTS=8080
+      - Content__RootPath=/app/content
+      # ASP.NET Core turns on server GC when it sees multiple cores, which on a 4-core board
+      # means substantially more resident memory for no benefit at single-visitor request
+      # volumes. Confirm the real figure with `docker stats` rather than trusting either default.
+      - DOTNET_gcServer=0
+
+    restart: unless-stopped
+
+    # Hardening. Cheap, and worth doing even on a private LAN.
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - "no-new-privileges:true"
+    mem_limit: 256m
+
+    healthcheck:
+      # /healthz fails when the bind mount is missing or empty, which is the failure Docker most
+      # needs to catch — a process that is listening but serving nothing but 404s.
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s

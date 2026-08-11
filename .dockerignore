@@ -1,0 +1,31 @@
+# Content is a bind mount, never baked into the image. Both the real tree and
+# the examples stay out, so the image cannot ship a stale copy of either.
+content/
+content.example/
+
+# Build output — the image builds from source inside the SDK stage.
+**/bin/
+**/obj/
+artifacts/
+
+# Repo metadata and tooling
+.git/
+.gitignore
+.github/
+.vs/
+.idea/
+.vscode/
+.claude/
+.env
+
+# Docs and local files the runtime never reads
+docs/
+*.md
+LICENSE
+compose.yaml
+Dockerfile
+.dockerignore
+
+# Test output
+**/TestResults/
+*.trx

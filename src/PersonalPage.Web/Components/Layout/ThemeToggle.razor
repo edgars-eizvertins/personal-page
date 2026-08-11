@@ -1,0 +1,17 @@
+@*
+    Three states: follow the OS (the default), force light, force dark. The control is hidden
+    until theme.js unhides it — a switch that cannot do anything without script has no business
+    being visible to a visitor without it. The OS preference alone still works via
+    prefers-color-scheme, with no script at all.
+*@
+<div class="theme-toggle" role="group" aria-label="Colour theme" data-theme-toggle hidden>
+    <button type="button" class="theme-option" data-theme-value="system" aria-pressed="true">
+        <span aria-hidden="true">◐</span><span class="visually-hidden">Follow system theme</span>
+    </button>
+    <button type="button" class="theme-option" data-theme-value="light" aria-pressed="false">
+        <span aria-hidden="true">☀</span><span class="visually-hidden">Light theme</span>
+    </button>
+    <button type="button" class="theme-option" data-theme-value="dark" aria-pressed="false">
+        <span aria-hidden="true">☾</span><span class="visually-hidden">Dark theme</span>
+    </button>
+</div>
