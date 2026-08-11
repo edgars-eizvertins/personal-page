@@ -40,3 +40,7 @@ Thumbs.db
 
 # Local Claude Code settings, not part of the project.
 .claude/settings.local.json
+
+# Python bytecode from the hub-readme script
+__pycache__/
+*.pyc

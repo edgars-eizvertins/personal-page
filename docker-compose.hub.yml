@@ -1,0 +1,46 @@
+# Run the site from the image published on Docker Hub — no source checkout and no build, so
+# this is what you copy to a server alongside a .env and your content/ directory.
+#
+#   docker compose -f docker-compose.hub.yml up -d
+#   IMAGE_TAG=v0.1.0 docker compose -f docker-compose.hub.yml up -d   # pin a release
+#
+# The image is multi-arch (amd64 + arm64); Docker pulls the right one automatically.
+services:
+  personal-page:
+    image: ${IMAGE_NAME:?Set IMAGE_NAME in .env, e.g. yourname/personal-page}:${IMAGE_TAG:-latest}
+    container_name: personal-page
+    restart: unless-stopped
+
+    ports:
+      - "${SITE_PORT:-8080}:8080"
+
+    # The whole point. Your markdown lives on the host, not in the image: save a file and the
+    # site reflects it on the next request. Read-only because the app only ever reads.
+    volumes:
+      - ./content:/app/content:ro
+
+    environment:
+      - ASPNETCORE_HTTP_PORTS=8080
+      - Content__RootPath=/app/content
+      # Workstation GC. Server GC claims substantially more resident memory on a small
+      # multi-core board for no benefit at these request volumes.
+      - DOTNET_gcServer=0
+
+    # Cheap hardening, worth doing even on a private LAN.
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - "no-new-privileges:true"
+    mem_limit: 256m
+
+    healthcheck:
+      # Fails when the content mount is missing or empty, not merely when the process dies —
+      # a site serving nothing but 404s is the failure worth catching.
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/healthz"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
