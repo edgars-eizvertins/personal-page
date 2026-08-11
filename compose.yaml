@@ -1,10 +1,16 @@
 services:
   personal-page:
-    build: .
-    image: personal-page:latest
-    container_name: personal-page
-    # Override in a local .env when 8080 is already taken on the host:
+    # Both are declared so one file covers both ends. A machine with the source builds; a
+    # deployment host with only this file and a .env pulls the published image instead.
+    #
+    # Set these in a local .env, which is gitignored — a registry namespace is a personal
+    # detail and does not belong in a repository meant to be forked:
+    #   IMAGE_NAME=your-dockerhub-user/personal-page
+    #   IMAGE_TAG=v0.1.0
     #   SITE_PORT=8091
+    build: .
+    image: ${IMAGE_NAME:-personal-page}:${IMAGE_TAG:-latest}
+    container_name: personal-page
     ports:
       - "${SITE_PORT:-8080}:8080"
 
