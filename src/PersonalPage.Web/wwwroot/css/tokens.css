@@ -2,16 +2,16 @@
  * tokens.css — custom properties only. No selectors that lay anything out, no rules that are not
  * a variable declaration. site.css consumes these and nothing else.
  *
- * This is deliberately a plain, neutral placeholder: system fonts, a grey scale, one restrained
- * accent. It should look unfinished but never be structurally wrong. A real design lands here as
- * a file swap — see docs/design.md.
- *
  * Every theme is declared twice:
  *   @media (prefers-color-scheme: …)  so the OS setting works with no script at all
  *   :root[data-theme="…"]             so the header toggle can override the OS in either direction
  *
  * The attribute selectors are written after the media queries and are more specific, so they win
  * both ways: a visitor on a dark-mode OS who picks light gets light.
+ *
+ * Palette notes: neutrals carry a slight cool cast rather than being pure grey, so surfaces read
+ * as a deliberate choice instead of an absence of one. Body text sits at 17px with a 66ch measure
+ * — roughly the same rendered column width as the old 16px/70ch, but easier to read.
  */
 
 :root {
@@ -21,14 +21,16 @@
 
   --text-xs: 0.75rem;
   --text-sm: 0.875rem;
-  --text-base: 1rem;
-  --text-lg: 1.125rem;
-  --text-xl: 1.375rem;
-  --text-2xl: 1.75rem;
-  --text-3xl: 2.25rem;
+  --text-base: 1.0625rem;
+  --text-lg: 1.1875rem;
+  --text-xl: 1.4375rem;
+  --text-2xl: 1.875rem;
+  /* Fluid display size: 34px on a phone, 44px from ~1100px up. clamp() keeps this a single
+     variable declaration — no media query, so the token/layout split is untouched. */
+  --text-3xl: clamp(2.125rem, 1.8rem + 1.38vw, 2.75rem);
 
   --line-height-body: 1.65;
-  --line-height-heading: 1.25;
+  --line-height-heading: 1.2;
 
   /* ------------------------------------------------------------- spacing */
   --space-1: 0.25rem;
@@ -38,124 +40,126 @@
   --space-5: 1.25rem;
   --space-6: 1.5rem;
   --space-8: 2rem;
-  --space-10: 2.5rem;
-  --space-12: 3rem;
+  --space-10: 3rem;
+  --space-12: 4rem;
 
   /* --------------------------------------------------------------- shape */
-  --radius-sm: 3px;
-  --radius-md: 6px;
-  --radius-lg: 10px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
 
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
-  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.08);
+  /* Two layers: a tight contact shadow plus a wider ambient one. A single layer at low opacity
+     reads as a smudge; the pair reads as depth. */
+  --shadow-sm: 0 1px 2px rgba(16, 20, 30, 0.05), 0 1px 3px rgba(16, 20, 30, 0.06);
+  --shadow-md: 0 2px 4px rgba(16, 20, 30, 0.05), 0 8px 20px rgba(16, 20, 30, 0.08);
 
   /* -------------------------------------------------------------- layout */
-  --measure: 68ch;
-  --page-width: 60rem;
+  --measure: 66ch;
+  --page-width: 64rem;
 
   /* -------------------------------------------------- colour (light theme) */
-  --color-bg: #ffffff;
-  --color-surface: #f6f7f8;
-  --color-text: #1b1d1f;
-  --color-text-muted: #5c6266;
-  --color-accent: #1f5fa8;
-  --color-accent-hover: #16457a;
-  --color-border: #d9dcdf;
-  --color-code-bg: #f4f5f6;
+  --color-bg: #fcfcfd;
+  --color-surface: #f3f5f8;
+  --color-text: #14171c;
+  --color-text-muted: #596273;
+  --color-accent: #2457d5;
+  --color-accent-hover: #1b3fa8;
+  --color-border: #e3e7ee;
+  --color-code-bg: #f5f7fa;
 
   /* -------------------------------------- syntax palette (light theme) */
-  --syntax-comment: #6b7177;
-  --syntax-keyword: #7c3f9e;
-  --syntax-string: #1a6b3c;
-  --syntax-number: #98551b;
-  --syntax-function: #1f5fa8;
-  --syntax-type: #0f6b73;
-  --syntax-operator: #4a5056;
-  --syntax-punctuation: #4a5056;
+  --syntax-comment: #6b7484;
+  --syntax-keyword: #8b3fa8;
+  --syntax-string: #1f7a44;
+  --syntax-number: #a35418;
+  --syntax-function: #2457d5;
+  --syntax-type: #0e7490;
+  --syntax-operator: #4a5263;
+  --syntax-punctuation: #4a5263;
 
   /* Extras beyond the eight required categories. Each falls back to a required token in
      site.css, so a design that only supplies the eight still renders correctly. */
-  --syntax-attribute: #98551b;
-  --syntax-builtin: #7c3f9e;
+  --syntax-attribute: #a35418;
+  --syntax-builtin: #8b3fa8;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --color-bg: #16181a;
-    --color-surface: #1e2124;
-    --color-text: #e3e6e8;
-    --color-text-muted: #9aa1a7;
-    --color-accent: #79aee8;
-    --color-accent-hover: #a4c8f0;
-    --color-border: #2e3336;
-    --color-code-bg: #1b1e21;
+    --color-bg: #0f1116;
+    --color-surface: #171b22;
+    --color-text: #e7eaf0;
+    --color-text-muted: #98a1b3;
+    --color-accent: #7fa6f5;
+    --color-accent-hover: #a8c4ff;
+    --color-border: #252b35;
+    --color-code-bg: #12161d;
 
-    --syntax-comment: #8b9299;
-    --syntax-keyword: #c99ae0;
-    --syntax-string: #8fce9f;
-    --syntax-number: #e0b080;
-    --syntax-function: #79aee8;
-    --syntax-type: #6fc9c4;
-    --syntax-operator: #b9c0c6;
-    --syntax-punctuation: #b9c0c6;
+    --syntax-comment: #7d8799;
+    --syntax-keyword: #c792ea;
+    --syntax-string: #9ece6a;
+    --syntax-number: #ff9e64;
+    --syntax-function: #7aa2f7;
+    --syntax-type: #2ac3de;
+    --syntax-operator: #a9b1d6;
+    --syntax-punctuation: #a9b1d6;
 
-    --syntax-attribute: #e0b080;
-    --syntax-builtin: #c99ae0;
+    --syntax-attribute: #ff9e64;
+    --syntax-builtin: #c792ea;
 
-    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
-    --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.6);
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.5);
+    --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.4), 0 8px 20px rgba(0, 0, 0, 0.55);
   }
 }
 
 /* The toggle's override. Declared after the media query and more specific, so it wins. */
 :root[data-theme="light"] {
-  --color-bg: #ffffff;
-  --color-surface: #f6f7f8;
-  --color-text: #1b1d1f;
-  --color-text-muted: #5c6266;
-  --color-accent: #1f5fa8;
-  --color-accent-hover: #16457a;
-  --color-border: #d9dcdf;
-  --color-code-bg: #f4f5f6;
+  --color-bg: #fcfcfd;
+  --color-surface: #f3f5f8;
+  --color-text: #14171c;
+  --color-text-muted: #596273;
+  --color-accent: #2457d5;
+  --color-accent-hover: #1b3fa8;
+  --color-border: #e3e7ee;
+  --color-code-bg: #f5f7fa;
 
-  --syntax-comment: #6b7177;
-  --syntax-keyword: #7c3f9e;
-  --syntax-string: #1a6b3c;
-  --syntax-number: #98551b;
-  --syntax-function: #1f5fa8;
-  --syntax-type: #0f6b73;
-  --syntax-operator: #4a5056;
-  --syntax-punctuation: #4a5056;
+  --syntax-comment: #6b7484;
+  --syntax-keyword: #8b3fa8;
+  --syntax-string: #1f7a44;
+  --syntax-number: #a35418;
+  --syntax-function: #2457d5;
+  --syntax-type: #0e7490;
+  --syntax-operator: #4a5263;
+  --syntax-punctuation: #4a5263;
 
-  --syntax-attribute: #98551b;
-  --syntax-builtin: #7c3f9e;
+  --syntax-attribute: #a35418;
+  --syntax-builtin: #8b3fa8;
 
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.06);
-  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-sm: 0 1px 2px rgba(16, 20, 30, 0.05), 0 1px 3px rgba(16, 20, 30, 0.06);
+  --shadow-md: 0 2px 4px rgba(16, 20, 30, 0.05), 0 8px 20px rgba(16, 20, 30, 0.08);
 }
 
 :root[data-theme="dark"] {
-  --color-bg: #16181a;
-  --color-surface: #1e2124;
-  --color-text: #e3e6e8;
-  --color-text-muted: #9aa1a7;
-  --color-accent: #79aee8;
-  --color-accent-hover: #a4c8f0;
-  --color-border: #2e3336;
-  --color-code-bg: #1b1e21;
+  --color-bg: #0f1116;
+  --color-surface: #171b22;
+  --color-text: #e7eaf0;
+  --color-text-muted: #98a1b3;
+  --color-accent: #7fa6f5;
+  --color-accent-hover: #a8c4ff;
+  --color-border: #252b35;
+  --color-code-bg: #12161d;
 
-  --syntax-comment: #8b9299;
-  --syntax-keyword: #c99ae0;
-  --syntax-string: #8fce9f;
-  --syntax-number: #e0b080;
-  --syntax-function: #79aee8;
-  --syntax-type: #6fc9c4;
-  --syntax-operator: #b9c0c6;
-  --syntax-punctuation: #b9c0c6;
+  --syntax-comment: #7d8799;
+  --syntax-keyword: #c792ea;
+  --syntax-string: #9ece6a;
+  --syntax-number: #ff9e64;
+  --syntax-function: #7aa2f7;
+  --syntax-type: #2ac3de;
+  --syntax-operator: #a9b1d6;
+  --syntax-punctuation: #a9b1d6;
 
-  --syntax-attribute: #e0b080;
-  --syntax-builtin: #c99ae0;
+  --syntax-attribute: #ff9e64;
+  --syntax-builtin: #c792ea;
 
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.5);
-  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.6);
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.5);
+  --shadow-md: 0 2px 4px rgba(0, 0, 0, 0.4), 0 8px 20px rgba(0, 0, 0, 0.55);
 }

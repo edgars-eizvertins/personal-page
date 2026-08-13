@@ -129,7 +129,7 @@ a:hover {
 }
 
 .site-nav-link.active {
-  color: var(--color-text);
+  color: var(--color-accent);
   font-weight: 600;
 }
 
@@ -518,7 +518,9 @@ a:hover {
 
 .card-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+  /* auto-fit, not auto-fill: empty tracks collapse, so two cards fill the row instead of
+     leaving a phantom third column's worth of dead space to the right. */
+  grid-template-columns: repeat(auto-fit, minmax(16rem, 1fr));
   gap: var(--space-5);
   list-style: none;
   margin: 0;
@@ -547,7 +549,7 @@ a:hover {
 }
 
 .card-title {
-  font-size: var(--text-lg);
+  font-size: var(--text-xl);
   line-height: var(--line-height-heading);
   margin: 0;
 }
@@ -664,7 +666,7 @@ a:hover {
 }
 
 .timeline-role {
-  font-size: var(--text-lg);
+  font-size: var(--text-xl);
   line-height: var(--line-height-heading);
   margin: 0;
 }
@@ -679,7 +681,7 @@ a:hover {
 .timeline-meta {
   display: flex;
   flex-wrap: wrap;
-  gap: var(--space-3);
+  gap: var(--space-4);
   margin: var(--space-2) 0 var(--space-3);
   font-size: var(--text-sm);
   color: var(--color-text-muted);
