@@ -75,13 +75,17 @@
 
         var projects = await Store.GetCollectionAsync(ContentFolders.Projects);
 
+        // These teasers reflect the published site, not the author's dev-mode draft preview, so
+        // drafts are excluded here even when ShowDrafts is on.
+
         // Featured projects come first, so the home page can be curated from front matter.
         _projects = projects
+            .Where(p => !p.IsDraft)
             .OrderByDescending(p => p.FrontMatter.Featured)
             .Take(RecentProjects)
             .ToList();
 
         var posts = await Store.GetCollectionAsync(ContentFolders.Blog);
-        _posts = posts.Take(RecentPosts).ToList();
+        _posts = posts.Where(p => !p.IsDraft).Take(RecentPosts).ToList();
     }
 }

@@ -6,6 +6,9 @@ content/
 .env
 *.local.env
 
+# Source material for content (CV, notes). Personal, never tracked.
+docs/Data/
+
 # .NET build output
 [Bb]in/
 [Oo]bj/
