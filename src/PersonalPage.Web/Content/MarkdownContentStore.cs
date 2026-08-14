@@ -439,15 +439,12 @@ public sealed class MarkdownContentStore : IContentStore, IDisposable
         // "2026-01-15-hello.md" needs no date key at all.
         frontMatter.Date ??= SlugBuilder.DateFromFileName(fileName);
 
-        var rendered = _renderer.Render(parsed.Body);
-
         return new ContentDocument(
             Slug: slug,
             Collection: folder,
             RelativePath: relativePath,
             FrontMatter: frontMatter,
-            Html: rendered.Html,
-            Headings: rendered.Headings,
+            Html: _renderer.Render(parsed.Body),
             Validator: stat.ToValidator(),
             ParseError: parsed.Error);
     }

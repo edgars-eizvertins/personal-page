@@ -32,24 +32,17 @@ public static class ContentPath
         // Decode repeatedly until it stops changing, so a double- or triple-encoded traversal
         // ("%252e%252e%252f") is unwrapped far enough to be recognised and rejected below.
         // Slugs are [a-z0-9-] by construction, so no legitimate path loses meaning to this.
-        string decoded;
-        try
+        // WebUtility.UrlDecode never throws — a malformed escape is left as written.
+        var decoded = path;
+        for (var pass = 0; pass < MaxDecodePasses; pass++)
         {
-            decoded = path;
-            for (var pass = 0; pass < MaxDecodePasses; pass++)
+            var next = WebUtility.UrlDecode(decoded);
+            if (string.Equals(next, decoded, StringComparison.Ordinal))
             {
-                var next = WebUtility.UrlDecode(decoded);
-                if (string.Equals(next, decoded, StringComparison.Ordinal))
-                {
-                    break;
-                }
-
-                decoded = next;
+                break;
             }
-        }
-        catch (Exception)
-        {
-            return null;
+
+            decoded = next;
         }
 
         if (decoded.Contains('\0') || decoded.Contains('\\'))

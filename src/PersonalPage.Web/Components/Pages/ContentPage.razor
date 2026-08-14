@@ -14,13 +14,7 @@
 }
 else
 {
-    <PageTitle>@PageTitleText</PageTitle>
-    @if (!string.IsNullOrWhiteSpace(_document.FrontMatter.Description))
-    {
-        <HeadContent>
-            <meta name="description" content="@_document.FrontMatter.Description" />
-        </HeadContent>
-    }
+    <PageMetadata Title="@_document.Title" Description="@_document.FrontMatter.Description" />
 
     <article class="page">
         <PageHeader Title="@_document.Title" />
@@ -33,13 +27,9 @@ else
     public string? Path { get; set; }
 
     private ContentDocument? _document;
-    private SiteConfig _site = SiteConfig.Default();
-
-    private string PageTitleText => $"{_document!.Title} · {_site.Title}";
 
     protected override async Task OnParametersSetAsync()
     {
-        _site = await Store.GetSiteAsync();
         _document = await Store.GetPageAsync(Path);
 
         if (_document is null)

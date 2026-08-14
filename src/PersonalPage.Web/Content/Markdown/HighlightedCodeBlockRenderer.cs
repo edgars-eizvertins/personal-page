@@ -26,7 +26,7 @@ public sealed class HighlightedCodeBlockRenderer(SyntaxHighlighter highlighter)
     {
         var info = (obj as FencedCodeBlock)?.Info;
         var language = SyntaxHighlighter.FindLanguage(info);
-        var label = LanguageLabel(info);
+        var label = SyntaxHighlighter.LanguageId(info);
         var code = ExtractCode(obj);
 
         renderer.EnsureLine();
@@ -46,18 +46,6 @@ public sealed class HighlightedCodeBlockRenderer(SyntaxHighlighter highlighter)
         renderer.Write(highlighter.Highlight(code, language));
         renderer.Write("</code></pre></div>");
         renderer.EnsureLine();
-    }
-
-    /// <summary>The fence's language word, used for the class name and the copy button label.</summary>
-    private static string? LanguageLabel(string? info)
-    {
-        if (string.IsNullOrWhiteSpace(info))
-        {
-            return null;
-        }
-
-        var word = info.Trim().Split(' ', '\t')[0].Trim();
-        return word.Length == 0 ? null : word.ToLowerInvariant();
     }
 
     private static string ExtractCode(LeafBlock block)

@@ -14,24 +14,35 @@ namespace PersonalPage.Web.Content.Markdown;
 /// </remarks>
 public sealed class SyntaxHighlighter
 {
-    private static readonly object LoadLock = new();
-    private static bool _languagesLoaded;
+    private static readonly Lazy<bool> LanguagesLoaded = new(LoadLanguages);
 
     public SyntaxHighlighter() => EnsureLanguagesLoaded();
 
-    /// <summary>Resolves a fence info string ("csharp", "bash", "js") to a known language.</summary>
-    public static ILanguage? FindLanguage(string? info)
+    /// <summary>
+    /// The language word of a fence info string, lowercased, or null when there is none.
+    /// "```csharp title=Foo.cs" — only the first word names the language.
+    /// </summary>
+    public static string? LanguageId(string? info)
     {
         if (string.IsNullOrWhiteSpace(info))
         {
             return null;
         }
 
-        EnsureLanguagesLoaded();
+        var word = info.Trim().Split(' ', '\t')[0].Trim();
+        return word.Length == 0 ? null : word.ToLowerInvariant();
+    }
 
-        // "```csharp title=Foo.cs" — only the first word names the language.
-        var id = info.Trim().Split(' ', '\t')[0].Trim().ToLowerInvariant();
-        return id.Length == 0 ? null : Languages.FindById(id);
+    /// <summary>Resolves a fence info string ("csharp", "bash", "js") to a known language.</summary>
+    public static ILanguage? FindLanguage(string? info)
+    {
+        if (LanguageId(info) is not { } id)
+        {
+            return null;
+        }
+
+        EnsureLanguagesLoaded();
+        return Languages.FindById(id);
     }
 
     /// <summary>
@@ -93,26 +104,16 @@ public sealed class SyntaxHighlighter
         return inner;
     }
 
-    private static void EnsureLanguagesLoaded()
+    /// <summary><see cref="Lazy{T}"/> is thread-safe by default, so the extra languages load once.</summary>
+    private static void EnsureLanguagesLoaded() => _ = LanguagesLoaded.Value;
+
+    private static bool LoadLanguages()
     {
-        if (_languagesLoaded)
+        foreach (var language in AdditionalLanguages.All)
         {
-            return;
+            Languages.Load(language);
         }
 
-        lock (LoadLock)
-        {
-            if (_languagesLoaded)
-            {
-                return;
-            }
-
-            foreach (var language in AdditionalLanguages.All)
-            {
-                Languages.Load(language);
-            }
-
-            _languagesLoaded = true;
-        }
+        return true;
     }
 }

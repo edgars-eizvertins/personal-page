@@ -21,12 +21,7 @@ public sealed class SiteConfig
     public List<SiteNavItem> Nav { get; set; } = [];
 
     /// <summary>Used when <c>site.yml</c> is missing or unparseable — never an exception.</summary>
-    public static SiteConfig Default() => new()
-    {
-        Title = "Your Name",
-        Tagline = "Developer portfolio",
-        Footer = null,
-    };
+    public static SiteConfig Default() => new() { Tagline = "Developer portfolio" };
 }
 
 public sealed class SiteNavItem

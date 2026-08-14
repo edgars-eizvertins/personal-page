@@ -1,7 +1,7 @@
 @page "/experience"
 @inject IContentStore Store
 
-<PageTitle>Experience · @_site.Title</PageTitle>
+<PageMetadata Title="Experience" />
 
 <article class="page">
     <PageHeader Title="Experience" />
@@ -24,12 +24,8 @@
 </article>
 
 @code {
-    private SiteConfig _site = SiteConfig.Default();
     private IReadOnlyList<ContentDocument> _roles = [];
 
-    protected override async Task OnInitializedAsync()
-    {
-        _site = await Store.GetSiteAsync();
+    protected override async Task OnInitializedAsync() =>
         _roles = await Store.GetCollectionAsync(ContentFolders.Experience);
-    }
 }

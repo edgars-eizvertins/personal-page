@@ -8,13 +8,7 @@
 }
 else
 {
-    <PageTitle>@_project.Title · @_site.Title</PageTitle>
-    @if (!string.IsNullOrWhiteSpace(Description))
-    {
-        <HeadContent>
-            <meta name="description" content="@Description" />
-        </HeadContent>
-    }
+    <PageMetadata Title="@_project.Title" Description="@Description" />
 
     <article class="page project">
         <PageHeader Title="@_project.Title" Meta="@ProjectDate">
@@ -27,16 +21,7 @@ else
 
             @if (HasLinks)
             {
-                <p class="page-links">
-                    @if (!string.IsNullOrWhiteSpace(_project.FrontMatter.Repo))
-                    {
-                        <a href="@_project.FrontMatter.Repo" rel="noopener">Source</a>
-                    }
-                    @if (!string.IsNullOrWhiteSpace(_project.FrontMatter.Url))
-                    {
-                        <a href="@_project.FrontMatter.Url" rel="noopener">Live</a>
-                    }
-                </p>
+                <ProjectLinks Document="_project" Class="page-links" />
             }
         </PageHeader>
 
@@ -59,7 +44,6 @@ else
     [Parameter]
     public string? Slug { get; set; }
 
-    private SiteConfig _site = SiteConfig.Default();
     private ContentDocument? _project;
 
     private string? ProjectDate => _project?.SortDate is { } date ? DateText.Long(date) : null;
@@ -72,7 +56,6 @@ else
 
     protected override async Task OnParametersSetAsync()
     {
-        _site = await Store.GetSiteAsync();
         _project = await Store.GetItemAsync(ContentFolders.Projects, Slug);
 
         if (_project is null)

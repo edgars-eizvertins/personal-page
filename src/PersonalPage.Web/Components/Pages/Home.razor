@@ -1,13 +1,7 @@
 @page "/"
 @inject IContentStore Store
 
-<PageTitle>@_site.Title</PageTitle>
-@if (!string.IsNullOrWhiteSpace(Description))
-{
-    <HeadContent>
-        <meta name="description" content="@Description" />
-    </HeadContent>
-}
+<PageMetadata Description="@Description" />
 
 <article class="page home">
     @if (_page is not null)

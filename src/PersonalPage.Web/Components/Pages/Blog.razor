@@ -1,7 +1,7 @@
 @page "/blog"
 @inject IContentStore Store
 
-<PageTitle>Writing · @_site.Title</PageTitle>
+<PageMetadata Title="Writing" />
 
 <article class="page">
     <PageHeader Title="Writing" Meta="@Meta" />
@@ -24,14 +24,10 @@
 </article>
 
 @code {
-    private SiteConfig _site = SiteConfig.Default();
     private IReadOnlyList<ContentDocument> _posts = [];
 
     private string? Meta => _posts.Count == 0 ? null : $"{_posts.Count} post{(_posts.Count == 1 ? "" : "s")}";
 
-    protected override async Task OnInitializedAsync()
-    {
-        _site = await Store.GetSiteAsync();
+    protected override async Task OnInitializedAsync() =>
         _posts = await Store.GetCollectionAsync(ContentFolders.Blog);
-    }
 }

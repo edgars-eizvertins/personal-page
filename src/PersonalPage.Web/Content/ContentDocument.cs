@@ -34,7 +34,6 @@ public readonly record struct ContentValidator(DateTime LastWriteTimeUtc, long L
 /// <param name="RelativePath">Path relative to the content root, using forward slashes.</param>
 /// <param name="FrontMatter">Parsed front matter, or defaults when there was none.</param>
 /// <param name="Html">Rendered body HTML. Does not include the title, which the layout renders as h1.</param>
-/// <param name="Headings">In-body headings, for a table of contents.</param>
 /// <param name="Validator">File stat at the time this document was parsed.</param>
 /// <param name="ParseError">Front matter error message, when the YAML failed to deserialize.</param>
 public sealed record ContentDocument(
@@ -43,7 +42,6 @@ public sealed record ContentDocument(
     string RelativePath,
     FrontMatter FrontMatter,
     string Html,
-    IReadOnlyList<DocumentHeading> Headings,
     ContentValidator Validator,
     string? ParseError = null)
 {
@@ -91,9 +89,6 @@ public sealed record ContentDocument(
         }
     }
 }
-
-/// <summary>A heading found in a rendered document body.</summary>
-public sealed record DocumentHeading(int Level, string Text, string Id);
 
 /// <summary>Folder names under the content root.</summary>
 public static class ContentFolders

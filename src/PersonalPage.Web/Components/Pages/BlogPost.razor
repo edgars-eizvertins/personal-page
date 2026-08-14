@@ -8,13 +8,7 @@
 }
 else
 {
-    <PageTitle>@_post.Title · @_site.Title</PageTitle>
-    @if (!string.IsNullOrWhiteSpace(Description))
-    {
-        <HeadContent>
-            <meta name="description" content="@Description" />
-        </HeadContent>
-    }
+    <PageMetadata Title="@_post.Title" Description="@Description" />
 
     <article class="page post">
         <PageHeader Title="@_post.Title" Meta="@PostDate">
@@ -33,7 +27,6 @@ else
     [Parameter]
     public string? Slug { get; set; }
 
-    private SiteConfig _site = SiteConfig.Default();
     private ContentDocument? _post;
 
     private string? PostDate => _post?.SortDate is { } date ? DateText.Long(date) : null;
@@ -42,7 +35,6 @@ else
 
     protected override async Task OnParametersSetAsync()
     {
-        _site = await Store.GetSiteAsync();
         _post = await Store.GetItemAsync(ContentFolders.Blog, Slug);
 
         if (_post is null)

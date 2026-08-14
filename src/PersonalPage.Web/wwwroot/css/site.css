@@ -252,7 +252,10 @@ a:hover {
   margin: var(--space-2) 0 0;
 }
 
-.page-links {
+/* The repo/live link row, on a project page and on a project card. Two hooks rather than one,
+   so a design can size them differently; identical until one wants to. */
+.page-links,
+.card-links {
   display: flex;
   gap: var(--space-4);
   margin: var(--space-3) 0 0;
@@ -579,12 +582,7 @@ a:hover {
   color: var(--color-text-muted);
 }
 
-.card-links {
-  display: flex;
-  gap: var(--space-4);
-  margin: var(--space-3) 0 0;
-  font-size: var(--text-sm);
-}
+/* .card-links is grouped with .page-links in the page-header section above. */
 
 /* --------------------------------------------------------------- blog list */
 

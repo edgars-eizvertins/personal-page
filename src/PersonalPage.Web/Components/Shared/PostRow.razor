@@ -5,7 +5,7 @@
     @if (Document.SortDate is { } date)
     {
         <p class="post-row-date">
-            <time datetime="@date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)">
+            <time datetime="@DateText.Iso(date)">
                 @DateText.Long(date)
             </time>
         </p>

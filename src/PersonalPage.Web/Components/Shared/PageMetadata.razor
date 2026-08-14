@@ -1,0 +1,41 @@
+@*
+    The two head elements a content page contributes: its title suffixed with the site title, and
+    a meta description when the front matter supplies one. Composing the title here is what keeps
+    every page from having to read site.yml just to know what to append.
+*@
+@inject IContentStore Store
+
+@*
+    The separator stays literal markup rather than moving into the C# string: Razor emits a
+    literal "·" verbatim, but HTML-encodes an interpolated one to "&#xB7;". Both render the same,
+    and keeping it here keeps the emitted bytes the same too.
+*@
+@if (string.IsNullOrWhiteSpace(Title))
+{
+    <PageTitle>@_siteTitle</PageTitle>
+}
+else
+{
+    <PageTitle>@Title · @_siteTitle</PageTitle>
+}
+
+@if (!string.IsNullOrWhiteSpace(Description))
+{
+    <HeadContent>
+        <meta name="description" content="@Description" />
+    </HeadContent>
+}
+
+@code {
+    /// <summary>Page title. Left unset, the site title stands alone — which is what the home page wants.</summary>
+    [Parameter]
+    public string? Title { get; set; }
+
+    [Parameter]
+    public string? Description { get; set; }
+
+    private string _siteTitle = SiteConfig.Default().Title;
+
+    protected override async Task OnParametersSetAsync() =>
+        _siteTitle = (await Store.GetSiteAsync()).Title;
+}

@@ -1,0 +1,26 @@
+@*
+    The "Source" and "Live" links a project declares in its front matter. The project card and the
+    project page render the same pair inside differently classed wrappers, hence the Class
+    parameter. Whether the wrapper appears at all stays with the caller — the card shows it for
+    every project, the detail page only when there is at least one link.
+*@
+<p class="@Class">
+    @if (!string.IsNullOrWhiteSpace(Document.FrontMatter.Repo))
+    {
+        <a href="@Document.FrontMatter.Repo" rel="noopener">Source</a>
+    }
+    @if (!string.IsNullOrWhiteSpace(Document.FrontMatter.Url))
+    {
+        <a href="@Document.FrontMatter.Url" rel="noopener">Live</a>
+    }
+</p>
+
+@code {
+    [Parameter]
+    [EditorRequired]
+    public ContentDocument Document { get; set; } = default!;
+
+    [Parameter]
+    [EditorRequired]
+    public string Class { get; set; } = "";
+}

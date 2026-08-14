@@ -1,4 +1,3 @@
-using System.Text;
 using Markdig;
 using Markdig.Renderers;
 using Markdig.Renderers.Html;
@@ -6,9 +5,6 @@ using Markdig.Syntax;
 using Markdig.Syntax.Inlines;
 
 namespace PersonalPage.Web.Content.Markdown;
-
-/// <summary>Rendered body HTML plus the in-body headings, for a table of contents.</summary>
-public readonly record struct MarkdownRenderResult(string Html, IReadOnlyList<DocumentHeading> Headings);
 
 /// <summary>
 /// Markdown to HTML. Every transformation here runs once per document and lands in the cached
@@ -38,18 +34,17 @@ public sealed class MarkdownRenderer
             .Build();
     }
 
-    public MarkdownRenderResult Render(string markdown)
+    public string Render(string markdown)
     {
         if (string.IsNullOrWhiteSpace(markdown))
         {
-            return new MarkdownRenderResult(string.Empty, []);
+            return string.Empty;
         }
 
         var document = Markdig.Markdown.Parse(markdown, _pipeline);
 
         DemoteHeadings(document);
         AnnotateImages(document);
-        var headings = CollectHeadings(document);
 
         using var writer = new StringWriter();
         var renderer = new HtmlRenderer(writer);
@@ -58,7 +53,7 @@ public sealed class MarkdownRenderer
         renderer.Render(document);
         writer.Flush();
 
-        return new MarkdownRenderResult(writer.ToString(), headings);
+        return writer.ToString();
     }
 
     /// <summary>
@@ -113,58 +108,6 @@ public sealed class MarkdownRenderer
             var attributes = link.GetAttributes();
             attributes.AddPropertyIfNotExist("loading", "lazy");
             attributes.AddPropertyIfNotExist("decoding", "async");
-        }
-    }
-
-    private static List<DocumentHeading> CollectHeadings(MarkdownDocument document)
-    {
-        var headings = new List<DocumentHeading>();
-
-        foreach (var heading in document.Descendants<HeadingBlock>())
-        {
-            var id = heading.GetAttributes().Id;
-            if (string.IsNullOrEmpty(id))
-            {
-                continue;
-            }
-
-            headings.Add(new DocumentHeading(heading.Level, InlineText(heading.Inline), id));
-        }
-
-        return headings;
-    }
-
-    private static string InlineText(ContainerInline? container)
-    {
-        if (container is null)
-        {
-            return string.Empty;
-        }
-
-        var builder = new StringBuilder();
-        Append(container, builder);
-        return builder.ToString().Trim();
-
-        static void Append(ContainerInline container, StringBuilder builder)
-        {
-            foreach (var inline in container)
-            {
-                switch (inline)
-                {
-                    case LiteralInline literal:
-                        builder.Append(literal.Content.AsSpan());
-                        break;
-                    case CodeInline code:
-                        builder.Append(code.Content);
-                        break;
-                    case LineBreakInline:
-                        builder.Append(' ');
-                        break;
-                    case ContainerInline nested:
-                        Append(nested, builder);
-                        break;
-                }
-            }
         }
     }
 }

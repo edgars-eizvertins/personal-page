@@ -17,7 +17,7 @@
         @if (Document.SortDate is { } date)
         {
             <p class="card-date">
-                <time datetime="@date.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture)">
+                <time datetime="@DateText.Iso(date)">
                     @DateText.Long(date)
                 </time>
             </p>
@@ -32,16 +32,7 @@
 
         @if (Links)
         {
-            <p class="card-links">
-                @if (!string.IsNullOrWhiteSpace(Document.FrontMatter.Repo))
-                {
-                    <a href="@Document.FrontMatter.Repo" rel="noopener">Source</a>
-                }
-                @if (!string.IsNullOrWhiteSpace(Document.FrontMatter.Url))
-                {
-                    <a href="@Document.FrontMatter.Url" rel="noopener">Live</a>
-                }
-            </p>
+            <ProjectLinks Document="Document" Class="card-links" />
         }
     </div>
 </article>

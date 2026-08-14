@@ -60,24 +60,9 @@ public static class SlugBuilder
         }
 
         var words = slug.Split('-', StringSplitOptions.RemoveEmptyEntries);
-        if (words.Length == 0)
-        {
-            return "Untitled";
-        }
-
-        var builder = new StringBuilder();
-        foreach (var word in words)
-        {
-            if (builder.Length > 0)
-            {
-                builder.Append(' ');
-            }
-
-            builder.Append(char.ToUpperInvariant(word[0]));
-            builder.Append(word.AsSpan(1));
-        }
-
-        return builder.ToString();
+        return words.Length == 0
+            ? "Untitled"
+            : string.Join(' ', words.Select(word => char.ToUpperInvariant(word[0]) + word[1..]));
     }
 
     /// <summary>Lowercases, folds diacritics and reduces the rest to <c>[a-z0-9-]</c>.</summary>

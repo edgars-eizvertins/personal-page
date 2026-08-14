@@ -1,0 +1,38 @@
+@*
+    One section of /_diagnostics: a heading carrying the finding count, and either the empty-state
+    line or the list of findings. Every section on that page has this shape.
+*@
+<section class="diagnostics-section">
+    <h2>@Heading</h2>
+
+    @if (Count == 0)
+    {
+        <p class="diagnostics-empty">@EmptyMessage</p>
+    }
+    else
+    {
+        <ul class="diagnostics-list">
+            @ChildContent
+        </ul>
+    }
+</section>
+
+@code {
+    [Parameter]
+    [EditorRequired]
+    public string Title { get; set; } = "";
+
+    /// <summary>Number of findings, shown after the title. Null for a section that is not a check.</summary>
+    [Parameter]
+    public int? Count { get; set; }
+
+    /// <summary>Shown instead of the list when the count is zero.</summary>
+    [Parameter]
+    public string? EmptyMessage { get; set; }
+
+    /// <summary>The <c>&lt;li&gt;</c> elements of the list.</summary>
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+
+    private string Heading => Count is { } count ? $"{Title} ({count})" : Title;
+}
