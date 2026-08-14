@@ -1,6 +1,10 @@
 # The site owner's real content is never tracked here.
 # Start from the shipped examples:  cp -r content.example content
-content/
+#
+# No trailing slash: content/ may be a symlink to a private repo holding the real text
+# rather than a directory, and a directory-only pattern would leave the link untracked-
+# but-visible in git status.
+content
 
 # Local deployment settings (hostnames, IPs) stay out of the repo.
 .env
