@@ -110,7 +110,11 @@ public sealed partial class ContentDiagnostics(IContentStore store)
             ParseIssues: store.Issues,
             BrokenLinks: brokenLinks,
             MissingMedia: missingMedia,
-            OrphanedAssets: assets.Where(a => !referencedAssets.Contains(a)).ToList(),
+            // favicon.png is never referenced from markdown — App.razor picks it up directly as
+            // an optional override of the engine's default tab icon (see docs/content-authoring.md).
+            OrphanedAssets: assets
+                .Where(a => !referencedAssets.Contains(a) && a != "favicon.png")
+                .ToList(),
             Drafts: documents.Where(d => d.IsDraft).ToList(),
             FutureDated: documents.Where(d => d.SortDate is { } date && date > today).ToList());
     }

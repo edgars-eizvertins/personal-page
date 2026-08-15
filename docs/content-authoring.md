@@ -160,6 +160,11 @@ dimensions, adding them prevents the page shifting while the image loads:
 ![A description](/media/diagram.png){width=800 height=450}
 ```
 
+**The browser tab icon** is one special case: drop a `content/assets/favicon.png` in and it wins
+over the engine's generic default automatically, no code change involved. Leave it out and the
+generic icon keeps showing — this is what keeps the icon out of `src/`, so a fork does not inherit
+your favicon.
+
 ### Code
 
 Fenced code is highlighted **on the server**, so it is coloured before any script runs and stays

@@ -13,7 +13,7 @@
 
     <link rel="stylesheet" href="@Assets["css/tokens.css"]" />
     <link rel="stylesheet" href="@Assets["css/site.css"]" />
-    <link rel="icon" type="image/png" href="@Assets["favicon.png"]" />
+    <link rel="icon" type="image/png" href="@FaviconHref" />
 
     <HeadOutlet />
 </head>
@@ -28,3 +28,14 @@
     <script src="@Assets["js/code-copy.js"]" defer></script>
 </body>
 </html>
+
+@code {
+    [Inject] private ContentRoot ContentRoot { get; set; } = default!;
+
+    // content/assets/favicon.png, if the site owner has dropped one in, wins over the engine's
+    // generic default — a fork-safe way to personalize the tab icon without touching src/.
+    private string FaviconHref =>
+        File.Exists(Path.Combine(ContentRoot.AssetsPath, "favicon.png"))
+            ? "/media/favicon.png"
+            : Assets["favicon.png"];
+}
